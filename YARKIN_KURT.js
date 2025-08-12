@@ -71,7 +71,10 @@
             `;
         });
 
-        html += `</div></div>`;
+        html += `</div>
+                    <button aria-label="back" class="custom-swiper-back"></button>
+                    <button aria-label="next" class="custom-swiper-next"></button>
+                </div>`
 
         $('.Section1').after(html); 
     };
@@ -87,6 +90,7 @@
                 flex-wrap: wrap;
                 justify-content: center;
                 flex-direction: column;
+                position: relative;
             }
             .custom-title-container {
                 display: flex;
@@ -108,6 +112,7 @@
             .custom-carousel {
                 display: flex;
                 gap: 15px;
+                width: 100%;
                 overflow-x: hidden;
                 flex-direction: row;
                 box-shadow: 15px 15px 30px 0 #ebebeb80;
@@ -115,25 +120,32 @@
                 background-color: #fff;
                 border-bottom-left-radius: 35px;
                 border-bottom-right-radius: 35px;
+                box-sizing: border-box;
             }
             .custom-carousel-item {
                 width: 272.5px;
-                z-index: 1;
+                z-index: 2;
                 display: block;
                 font-family: Poppins, "cursive";
                 font-size: 12px;
                 padding: 5px;
                 color: #7d7d7d;
-                margin: 0 0 20px 3px;
+                margin: 2px 0 20px 3px;
                 border: 1px solid #ededed;
                 border-radius: 10px;
                 position: relative;
                 text-decoration: none;
                 background-color: #fff;
+                box-sizing: border-box;
+                transition: border-color, box-shadow;
+            }
+            .custom-carousel-item:hover {
+                border-color: #f28e00;
+                box-shadow: 0 0 0 2px #f28e00;
             }
             .product-image-container {
                 height: 203px;
-                width: 100%;
+                width: 261px;
                 margin-bottom: 45px;
             }
             .product-image {
@@ -167,6 +179,44 @@
                 font-weight: 600;
                 font-family: Poppins, "cursive";
             }
+            .custom-swiper-back {
+                background: url(/assets/svg/prev.svg) no-repeat;
+                background-color: #fef6eb;
+                background-position: 18px;
+                left: -65px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                position: absolute;
+                bottom: 50%;
+                top: auto;
+                border: 0px solid #fef6eb;
+                transition: background-color, border-width;
+            }
+            .custom-swiper-back:hover {
+                background-color: #fff;
+                border-width: 1px;
+                border-color: #f28e00;
+            }
+            .custom-swiper-next {
+                background: url(/assets/svg/next.svg) no-repeat;
+                background-color: #fef6eb;
+                background-position: 18px;
+                right: -65px;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                position: absolute;
+                bottom: 50%;
+                top: auto;
+                border: 0px solid #fef6eb;
+                transition: background-color, border-width;
+            }
+            .custom-swiper-next:hover {
+                background-color: #fff;
+                border-width: 1px;
+                border-color: #f28e00;
+            }
         `;
 
         $('<style>').addClass('carousel-style').html(css).appendTo('head'); 
@@ -176,7 +226,14 @@
         $('').on('click', () => {
             console.log('clicked');
         });
+        //open product page on new tab
+        $(document).on("click", ".custom-carousel-item", function(e) {
+            if ($(e.target).hasClass("heart")) return; // skip heart clicks
+            const url = $(this).data("url");
+            window.open(url, "_blank");
+        });
     };
+    
 
     init();
 })();
