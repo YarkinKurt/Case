@@ -9,7 +9,7 @@
         }
         await loadJQuery();
         const products = await fetchProducts();
-        buildHTML();
+        buildHTML(products);
         buildCSS();
         setEvents();
     };
@@ -43,15 +43,35 @@
         }
     };
 
-    const buildHTML = () => {
-        const html = ` 
+    const buildHTML = (products) => {
+        let html = ` 
             <div class="custom-carousel-container">
                 <div class="custom-title-container">
-                    <h2> Beğenebileceğinizi düşündüklerimiz </h2>
+                    <h2 class="custom-title"> Beğenebileceğinizi düşündüklerimiz </h2>
                 </div>
-                <div class= "custom-carousel"></div>
-            </div>
+                <div class="custom-carousel">
         `;
+
+        products.forEach(product => {
+            html += `
+                <div class="custom-carousel-item" data-id="${product.id}" data-url="${product.url}">
+                    <div class="product-image-container">
+                        <img class="product-image" src="${product.img}" alt="${product.title}">
+                    </div>
+                    <div class="product-info">
+                        <h2 class="product-title">
+                            <b>${product.brand} - </b>
+                            <span>${product.name}</span>
+                        </h2>
+                        <div class="price-container">
+                            <span class="price-text">${product.price}₺</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div></div>`;
 
         $('.Section1').after(html); 
     };
@@ -77,7 +97,7 @@
                 border-top-left-radius: 35px;
                 border-top-right-radius: 35px;
             }
-            .custom-carousel-container h2 {
+            .custom-title {
                 font-family: Quicksand-Bold;
                 font-size: 3rem;
                 font-weight: 700;
@@ -88,8 +108,64 @@
             .custom-carousel {
                 display: flex;
                 gap: 15px;
-                overflow-x: auto;
+                overflow-x: hidden;
                 flex-direction: row;
+                box-shadow: 15px 15px 30px 0 #ebebeb80;
+                margin-top: 20px;
+                background-color: #fff;
+                border-bottom-left-radius: 35px;
+                border-bottom-right-radius: 35px;
+            }
+            .custom-carousel-item {
+                width: 272.5px;
+                z-index: 1;
+                display: block;
+                font-family: Poppins, "cursive";
+                font-size: 12px;
+                padding: 5px;
+                color: #7d7d7d;
+                margin: 0 0 20px 3px;
+                border: 1px solid #ededed;
+                border-radius: 10px;
+                position: relative;
+                text-decoration: none;
+                background-color: #fff;
+            }
+            .product-image-container {
+                height: 203px;
+                width: 100%;
+                margin-bottom: 45px;
+            }
+            .product-image {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+            .product-info {
+                font-family: Poppins, "cursive";
+                font-size: 12px;
+                margin: 0 13px 17px 17px;
+            }
+            .product-title {
+                font-size: 1.2rem;
+                height: 42px;
+                overflow: hidden;
+                margin-bottom: 10px;
+            }
+            .price-container {
+                position: relative;
+                display: flex;
+                justify-content: flex-end;
+                flex-direction: column;
+                height: 43px;
+                align-items: center;
+            }
+            .price-text {
+                display: block;
+                width: 100%;    
+                font-size: 2.2rem;
+                font-weight: 600;
+                font-family: Poppins, "cursive";
             }
         `;
 
