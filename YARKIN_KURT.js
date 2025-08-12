@@ -45,24 +45,55 @@
 
     const buildHTML = () => {
         const html = ` 
-            <div class="container">
-                <h1></h1>
+            <div class="custom-carousel-container">
+                <div class="custom-title-container">
+                    <h2> Beğenebileceğinizi düşündüklerimiz </h2>
+                </div>
+                <div class= "custom-carousel"></div>
             </div>
         `;
 
-        $('.product-detail').append(html); 
+        $('.Section1').after(html); 
     };
 
     const buildCSS = () => {
         const css = ` 
-            .container {
-                background-color: red;
-                height: 100px;
-                width: 100px;
+            .custom-carousel-container {
+                box-sizing: border-box;
+                padding: 20px 15px;
+                max-width: 1180px;
+                flex: 1;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                flex-direction: column;
+            }
+            .custom-title-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background-color: #fef6eb;
+                padding: 25px 67px;
+                border-top-left-radius: 35px;
+                border-top-right-radius: 35px;
+            }
+            .custom-carousel-container h2 {
+                font-family: Quicksand-Bold;
+                font-size: 3rem;
+                font-weight: 700;
+                line-height: 1.11;
+                color: #f28e00;
+                margin: 0;
+            }
+            .custom-carousel {
+                display: flex;
+                gap: 15px;
+                overflow-x: auto;
+                flex-direction: row;
             }
         `;
 
-        $('style').addClass('carousel-style').html(css).appendTo('head'); 
+        $('<style>').addClass('carousel-style').html(css).appendTo('head'); 
     };
 
     const setEvents = () => {
