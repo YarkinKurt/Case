@@ -335,9 +335,6 @@
     };
 
     const setEvents = () => {
-        $('').on('click', () => {
-            console.log('clicked');
-        });
         //open product page on new tab
         $(document).on("click", ".custom-carousel-item", function(e) {
             if ($(e.target).hasClass("heart")) return; // skip heart clicks
