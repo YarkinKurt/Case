@@ -2,7 +2,6 @@
     const FETCH_URL = "https://gist.githubusercontent.com/sevindi/8bcbde9f02c1d4abe112809c974e1f49/raw/9bf93b58df623a9b16f1db721cd0a7a539296cf0/products.json";
 
     let activeProduct = 0;
-    let totalProducts;
     const cardWidth = 290.5; //width + gap = 272.5 + 18
     const visibleCardsCount = 4;
     let items;
@@ -15,7 +14,6 @@
         }
         await loadJQuery();
         const products = await fetchProducts();
-        totalProducts = products.length;
         buildHTML(products);
         items = document.getElementsByClassName("custom-carousel-item");
         buildCSS();
@@ -67,6 +65,19 @@
         `;
 
         products.forEach(product => {
+            //Product is on discount if price is different than original price (lower price is the current)
+            const hasDiscount = product.price !== product.original_price;
+            let currentPrice, oldPrice, discountPercent = 0;
+            if(product.price < product.original_price){
+                discountPercent = hasDiscount ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0;
+                currentPrice = product.price;
+                oldPrice = product.original_price;
+            }
+            else{
+                discountPercent = hasDiscount ? Math.round(((product.price - product.original_price) / product.price) * 100) : 0;
+                currentPrice = product.original_price;
+                oldPrice = product.price;
+            }
             html += `
                 <div class="custom-carousel-item" data-id="${product.id}" data-url="${product.url}">
                     <div class="product-image-container">
@@ -78,7 +89,15 @@
                             <span>${product.name}</span>
                         </h2>
                         <div class="price-container">
-                            <span class="price-text">${product.price}₺</span>
+                            ${hasDiscount 
+                                ? `<div class="old-price-container">
+                                        <span class="old-price">${oldPrice} TL</span>
+                                        <span class="discount">%${discountPercent}</span>
+                                        <i class="icon icon-decrease"></i>
+                                   </div>
+                                   <span class="current-price">${currentPrice} TL</span>`
+                                : `<span class="price-text">${currentPrice} TL</span>`
+                            }
                         </div>
                     </div>
                 </div>
@@ -128,6 +147,7 @@
                 gap: 15px;
                 width: 100%;
                 overflow-x: hidden;
+                overflow-y: hidden;
                 flex-direction: row;
                 box-shadow: 15px 15px 30px 0 #ebebeb80;
                 margin-top: 20px;
@@ -185,8 +205,41 @@
                 justify-content: flex-end;
                 flex-direction: column;
                 height: 43px;
-                align-items: center;
+                align-items: flex-start;
+                margin-top: 70px;
             }
+            .current-price {
+                display: block;
+                width: 100%;    
+                font-size: 2.2rem;
+                font-weight: 600;
+                color: #00a365;
+                font-family: Poppins, "cursive";
+            }
+            .old-price-container{
+                align-items: center;
+                gap: 8px;              
+                height: auto
+            }
+            .old-price{
+                font-size: 1.4rem;
+                font-weight: 500;
+                text-decoration: line-through;
+            }
+            .discount{
+                color: #00a365;
+                font-size: 18px;
+                font-weight: 700;
+                display: inline-flex;
+                justify-content: center;
+            }
+            .icon-decrease{
+                display: inline-block;
+                height: 22px;
+                font-size: 22px;
+                margin-left: 3px;
+                color: #00a365;
+            }        
             .price-text {
                 display: block;
                 width: 100%;    
@@ -254,7 +307,7 @@
             }
         });
         $(document).on("click", ".custom-swiper-next", () => {
-            if (activeProduct < totalProducts - visibleCardsCount) {
+            if (activeProduct < items.length - visibleCardsCount) {
             activeProduct += 1;
             moveCards(-activeProduct * cardWidth);
             }
