@@ -48,6 +48,14 @@
             return data;
         }
     };
+
+    const getFavorites = () => {
+        return JSON.parse(localStorage.getItem("CAROUSEL_FAVORITES") || "[]");
+    };
+
+    const saveFavorites = (favorites) => {
+        localStorage.setItem("CAROUSEL_FAVORITES", JSON.stringify(favorites));
+    };
     
     const moveCards = (amountToMove) => {
          for (let i = 0; i < items.length; i++) {
@@ -56,6 +64,7 @@
     };
 
     const buildHTML = (products) => {
+        const favorites = getFavorites();
         let html = ` 
             <div class="custom-carousel-container">
                 <div class="custom-title-container">
@@ -65,6 +74,8 @@
         `;
 
         products.forEach(product => {
+            //Check if product has been favorited
+            const isFav = favorites.includes(product.id);
             //Product is on discount if price is different than original price (lower price is the current)
             const hasDiscount = product.price !== product.original_price;
             let currentPrice, oldPrice, discountPercent = 0;
@@ -82,6 +93,14 @@
                 <div class="custom-carousel-item" data-id="${product.id}" data-url="${product.url}">
                     <div class="product-image-container">
                         <img class="product-image" src="${product.img}" alt="${product.title}">
+                         ${isFav 
+                                ? `<div class="heart active">
+                                        <img id="default-favorite" src="assets/svg/default-favorite.svg" alt="heart" class="heart-icon">
+                                    </div>`
+                                :`<div class="heart">
+                                    <img id="default-favorite" src="assets/svg/default-favorite.svg" alt="heart" class="heart-icon">
+                                </div>`
+                            }                    
                     </div>
                     <div class="product-info">
                         <h2 class="product-title">
@@ -285,6 +304,31 @@
                 border-width: 1px;
                 border-color: #f28e00;
             }
+            .heart {
+                position: absolute;
+                top: 10px;
+                right: 15px;
+                font-size: 20px;
+                background-color: #fff;
+                border-radius: 50%;
+                box-shadow: 0 2px 4px 0 #00000024;
+                width: 50px;
+                height: 50px;
+                cursor: pointer;
+                color: #ccc;
+                transition: background-color 0.3s;
+            }
+            .heart.active {
+                background-color: #f28e00;
+            }
+            .heart-icon {
+                filter: grayscale(1);
+                transition: filter 0.3s;
+            }
+            .heart.active .heart-icon {
+                filter: none;
+                fill: #f28e00; /* example fill color */
+            }
         `;
 
         $('<style>').addClass('carousel-style').html(css).appendTo('head'); 
@@ -311,6 +355,22 @@
             activeProduct += 1;
             moveCards(-activeProduct * cardWidth);
             }
+        });
+        $(document).on("click", ".heart", function(e) {
+            e.stopPropagation();
+            const parent = $(this).closest(".custom-carousel-item");
+            const id = parent.data("id");
+            let favorites = getFavorites();
+
+            if ($(this).hasClass("active")) {
+                $(this).removeClass("active");
+                favorites = favorites.filter(fav => fav !== id);
+            } else {
+                $(this).addClass("active");
+                favorites.push(id);
+            }
+
+            saveFavorites(favorites);
         });
 
     };
