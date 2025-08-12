@@ -1,6 +1,12 @@
 (() => {
     const FETCH_URL = "https://gist.githubusercontent.com/sevindi/8bcbde9f02c1d4abe112809c974e1f49/raw/9bf93b58df623a9b16f1db721cd0a7a539296cf0/products.json";
 
+    let activeProduct = 0;
+    let totalProducts;
+    const cardWidth = 290.5; //width + gap = 272.5 + 18
+    const visibleCardsCount = 4;
+    let items;
+
     const init = async () => {
         //code only runs in homepage
         if (!isHomePage()) {
@@ -9,7 +15,9 @@
         }
         await loadJQuery();
         const products = await fetchProducts();
+        totalProducts = products.length;
         buildHTML(products);
+        items = document.getElementsByClassName("custom-carousel-item");
         buildCSS();
         setEvents();
     };
@@ -40,6 +48,12 @@
             const data = await response.json();
             localStorage.setItem("CAROUSEL_PRODUCTS", JSON.stringify(data));
             return data;
+        }
+    };
+    
+    const moveCards = (amountToMove) => {
+         for (let i = 0; i < items.length; i++) {
+            items[i].style.transform = `translateX(${amountToMove}px)`;
         }
     };
 
@@ -137,11 +151,12 @@
                 text-decoration: none;
                 background-color: #fff;
                 box-sizing: border-box;
-                transition: border-color, box-shadow;
+                transition: border-color, box-shadow, transform 0.3s ease;
             }
             .custom-carousel-item:hover {
                 border-color: #f28e00;
                 box-shadow: 0 0 0 2px #f28e00;
+                cursor: pointer;
             }
             .product-image-container {
                 height: 203px;
@@ -232,6 +247,19 @@
             const url = $(this).data("url");
             window.open(url, "_blank");
         });
+        $(document).on("click", ".custom-swiper-back", () => {
+             if (activeProduct > 0) {
+                activeProduct -= 1;
+                moveCards(-activeProduct * cardWidth);
+            }
+        });
+        $(document).on("click", ".custom-swiper-next", () => {
+            if (activeProduct < totalProducts - visibleCardsCount) {
+            activeProduct += 1;
+            moveCards(-activeProduct * cardWidth);
+            }
+        });
+
     };
     
 
