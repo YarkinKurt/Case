@@ -1,9 +1,37 @@
 (() => {
-    const init = () => {
+    const FETCH_URL = "https://gist.githubusercontent.com/sevindi/8bcbde9f02c1d4abe112809c974e1f49/raw/9bf93b58df623a9b16f1db721cd0a7a539296cf0/products.json";
+
+    const init = async () => {
+        //code only runs in homepage
+        if (!isHomePage()) {
+            console.log("wrong page");
+            return;
+        }
+        const products = await fetchProducts();
         self.buildHTML();
         self.buildCSS();
         self.setEvents();
     };
+
+    const isHomePage = () => {
+        return location.pathname === "/" || location.pathname === "/index.html";
+    };
+
+    
+
+    const fetchProducts = async () => {
+        //get products from localstorage if not, fetch it.
+        const cached = localStorage.getItem("CAROUSEL_PRODUCTS");
+        if (cached) {
+            return JSON.parse(cached);
+        } else {
+            let response = await fetch(FETCH_URL);
+            const data = await response.json();
+            localStorage.setItem("CAROUSEL_PRODUCTS",JSON.stringify(data));
+            return data;
+        }
+
+    }
 
     const buildHTML = () => {
         const html = ` 
