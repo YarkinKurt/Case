@@ -7,14 +7,25 @@
             console.log("wrong page");
             return;
         }
+        await loadJQuery();
         const products = await fetchProducts();
-        self.buildHTML();
-        self.buildCSS();
-        self.setEvents();
+        buildHTML();
+        buildCSS();
+        setEvents();
     };
 
     const isHomePage = () => {
         return location.pathname === "/" || location.pathname === "/index.html";
+    };
+
+    const loadJQuery = async () => {
+        return new Promise((resolve) => {
+            if (window.jQuery) return resolve();
+            const script = document.createElement("script");
+            script.src = "https://code.jquery.com/jquery-3.7.1.min.js";
+            script.onload = resolve;
+            document.head.appendChild(script);
+        });
     };
 
     
@@ -27,11 +38,10 @@
         } else {
             let response = await fetch(FETCH_URL);
             const data = await response.json();
-            localStorage.setItem("CAROUSEL_PRODUCTS",JSON.stringify(data));
+            localStorage.setItem("CAROUSEL_PRODUCTS", JSON.stringify(data));
             return data;
         }
-
-    }
+    };
 
     const buildHTML = () => {
         const html = ` 
